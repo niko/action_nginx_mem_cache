@@ -4,11 +4,24 @@ The problem with this kind of caching is that NginX and Rails somwhow have to co
 
 To accomplish the first I decided to use use a cookie - set by Rails - to tell NginX what NOT to cache. In out case we do a timed expiration of pages for not logged in users, but you can define your own rules. So if s/o logs in, he gets the prevent_action_caching cookie set and NginX never passes his requests memcache.
 
-And NginX sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the contruction of the cache key is done just at one place: NginX. Mostly, at least as Rails adds 'views/' in front of every given action cache key.
+And NginX sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the contruction of the cache key is done just at one place: NginX (besides the fact that Rails adds 'views/' in front of every given action cache key).
+
+Functionally this caching is sort of a mixture between Rails page caching and Rails action caching. You still have the possibility to define a caching rule on a per-client (not per action) basis but keep away most of load from rails. And you have the added benefit of time-based expiration (default is 5 minutes).
+
+In your controllers you just call
+
+action_nginx_mem_cache :only => :index
+
+with the same options as any after filter. There are two additional options for cookie options and the expiration time:
+
+action_nginx_mem_cache :only => :index, :cookie_opts => {:domain => SESSION_DOMAIN}, :expires_in Time.now + 10 minutes
+
+POST requests are automatically excluded and responses with a status other than 200 are not written to cache.
 
 To make this plugin work you have to have rules similar to these in your NginX configuration:
 
-
+###################################
+# nginx.conf:
 
 set $memcached_key_postfix  '$host$request_uri'; # construct the cache key.
 set $memcached_key          views/$memcached_key_postfix;      # rails automagically prepends a 'views/' string, so we do the same.

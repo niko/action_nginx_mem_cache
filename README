@@ -1,10 +1,10 @@
-This is a simple Rails plugin do do action caching with memcache and have nginx pull the cached pages from memcache directly. So requests for cached pages don't even hit your Rails app server.
+This is a simple Rails plugin do do action caching with memcache and have nginx pull the cached pages from memcache directly. So requests for cached pages don't even hit your Rails app server. It may not fit for all but it still could serve as a blueprint to implement s/th that suits your own caching needs. restorm.com runs this in production.
 
-The problem with this kind of caching is that NginX and Rails somwhow have to communicate about what to cache and where to find the cached pages (the cache_key).
+The problem with this kind of caching is that Nginx and Rails somwhow have to communicate about what to cache and where to find the cached pages (the cache_key).
 
-To accomplish the first I decided to use use a cookie - set by Rails - to tell NginX what NOT to cache. In out case we do a timed expiration of pages for not logged in users, but you can define your own rules. So if s/o logs in, he gets the prevent_action_caching cookie set and NginX never passes his requests memcache.
+To accomplish the first I decided to use use a cookie - set by Rails - to tell Nginx what NOT to cache. In out case we do a timed expiration of pages for not logged in users, but you can define your own rules. So if s/o logs in, he gets the prevent_action_caching cookie set and Nginx never passes his requests memcache.
 
-And NginX sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the contruction of the cache key is done just at one place: NginX (besides the fact that Rails adds 'views/' in front of every given action cache key).
+And Nginx sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the contruction of the cache key is done just at one place: Nginx (besides the fact that Rails adds 'views/' in front of every given action cache key).
 
 Functionally this caching is sort of a mixture between Rails page caching and Rails action caching. You still have the possibility to define a caching rule on a per-client (not per action) basis but keep away most of load from rails. And you have the added benefit of time-based expiration (default is 5 minutes).
 
@@ -16,9 +16,9 @@ with the same options as any after filter. There are two additional options for 
 
 action_nginx_mem_cache :only => :index, :cookie_opts => {:domain => SESSION_DOMAIN}, :expires_in Time.now + 10 minutes
 
-POST requests are automatically excluded and responses with a status other than 200 are not written to cache. If you don't run this plugin behind NginX and if NginX doesn't set the Mem-Cache-Key header no caching is done.
+POST requests are automatically excluded and responses with a status other than 200 are not written to cache. If you don't run this plugin behind Nginx and if Nginx doesn't set the Mem-Cache-Key header no caching is done.
 
-To make this plugin work you have to have rules similar to these in your NginX configuration:
+To make this plugin work you have to have rules similar to these in your Nginx configuration:
 
 ###################################
 # nginx.conf:
@@ -74,3 +74,9 @@ location / {
   
   proxy_pass http://backend;
 }
+
+For more information see
+
+* http://wiki.codemongers.com/NginxHttpMemcachedModule
+* http://www.igvita.com/2008/02/11/nginx-and-memcached-a-400-boost/
+* http://weichhold.com/2008/09/12/django-nginx-memcached-the-dynamic-trio/

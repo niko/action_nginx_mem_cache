@@ -10,11 +10,28 @@ Functionally this caching is sort of a mixture between Rails page caching and Ra
 
 In your controllers you just call
 
-action_nginx_mem_cache :only => :index
+  action_nginx_mem_cache :only => :index
 
 with the same options as any after filter. There are two additional options for cookie options and the expiration time:
 
-action_nginx_mem_cache :only => :index, :cookie_opts => {:domain => SESSION_DOMAIN}, :expires_in Time.now + 10 minutes
+  action_nginx_mem_cache :only => :index, :cookie_opts => {:domain => SESSION_DOMAIN}, :expires_in Time.now + 10 minutes
+
+To control, wether or not to cache the request of a certain user, define prevent_action_caching? in your controller:
+
+  def prevent_action_caching?
+    current_user
+  end
+
+To manually set or delete the prevent_action_caching cookie, use these:
+
+  prevent_action_caching
+
+and
+
+  dont_prevent_action_caching
+
+Both take the cookie-opts as options.
+
 
 POST requests are automatically excluded and responses with a status other than 200 are not written to cache. If you don't run this plugin behind Nginx and if Nginx doesn't set the Mem-Cache-Key header no caching is done.
 

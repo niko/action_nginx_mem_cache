@@ -1,24 +1,6 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 require 'action_nginx_mem_cache_filter'
-require 'action_controller/test_process'
-
-class ControllerStub < ActionController::Base
-  
-  def request
-    ActionController::TestRequest.new({
-      "controller" => "whatever",
-      "action"     => "some_action",
-      "_method"    => "get"
-    })
-  end
-  
-  def response
-    @response = ActionController::TestResponse.new
-  end
-  
-end
-
 
 describe ActionNginxMemCacheFilter do
   
@@ -29,13 +11,6 @@ describe ActionNginxMemCacheFilter do
         a.instance_variable_get('@expires_in').should == 'tomorrow'
       end
     end
-    # describe "without a expires_in option" do
-    #   it "should set the default" do
-    #     Time.should_receive(:now).at_least(:once).and_return Time.parse('01.01.2007 00:00')
-    #     a = ActionNginxMemCacheFilter.new
-    #     a.instance_variable_get('@expires_in').should == Time.parse('01.01.2007 00:05')
-    #   end
-    # end
     it "should set the cookie_opts instance variable" do
       a = ActionNginxMemCacheFilter.new :cookie_opts => {:some => :cookie_opt}
       a.instance_variable_get('@cookie_opts').should == {:some => :cookie_opt}
@@ -102,9 +77,10 @@ describe ActionNginxMemCacheFilter do
       before(:each) do
         ActionController::Base.should_receive(:perform_caching).and_return(false)
       end
-      it "should return nil" do
+      it "should not do anything" do
         a = ActionNginxMemCacheFilter.new
-        a.after(@controller).should be_nil
+        @controller.should_receive(:instance_variable_set).never
+        a.after(@controller)
       end
     end
   end

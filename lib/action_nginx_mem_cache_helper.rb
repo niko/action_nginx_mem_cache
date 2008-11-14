@@ -50,8 +50,13 @@ module ActionNginxMemCacheHelper
     # set $memcached_key          views/$memcached_key_postfix;
     # proxy_set_header Mem-Cache-Key    $memcached_key_postfix;
     #
-    def write_action_cache(expires_in=Time.now + 5.minutes)
-      cache_key =  request.env['HTTP_MEM_CACHE_KEY']
+    def write_action_cache(expires_in=nil)
+      expires_in ||= 5.minutes
+      
+      cache_key = request.env['HTTP_MEM_CACHE_KEY']
+      
+      return false if cache_key.size > 250
+      
       write_fragment(cache_key, response.body, {:expires_in => expires_in, :raw => true})
     end
     

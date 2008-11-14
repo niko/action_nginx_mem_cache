@@ -46,8 +46,8 @@ POST requests are automatically excluded and responses with a status other than 
 
 To make this plugin work you have to have rules similar to these in your Nginx configuration:
 
-###################################
-# nginx.conf:
+nginx.conf
+==========
 
     set $memcached_key_postfix  '$host$request_uri'; # construct the cache key.
     set $memcached_key          views/$memcached_key_postfix;      # rails automagically prepends a 'views/' string, so we do the same.
@@ -106,7 +106,8 @@ Known Bugs
 
 * 'Mem-Cache-Key's are not generated correctly for URLs with a %-sign in a query string. Further investigation pending.
 
-For more information see
+More information
+================
 
 * http://wiki.codemongers.com/NginxHttpMemcachedModule
 * http://www.igvita.com/2008/02/11/nginx-and-memcached-a-400-boost/

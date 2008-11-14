@@ -12,7 +12,7 @@ To accomplish the first I decided to use use a cookie - set by Rails - to tell N
 
 And Nginx sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the contruction of the cache key is done just at one place: Nginx (besides the fact that Rails adds 'views/' in front of every given action cache key).
 
-Functionally this caching is sort of a mixture between Rails page caching and Rails action caching. You still have the possibility to define a caching rule on a per-client (not per action) basis but keep away most of load from rails. And you have the added benefit of time-based expiration. Note that the default is 5 minutes, as for usual usecase this seems to be a sensible default (at least to me). Just use SOME_GREAT_INTEGER(TM) for no expiration.
+Functionally this caching is sort of a mixture between Rails page caching and Rails action caching. You still have the possibility to define a caching rule on a per-client (not per action) basis but keep away most of load from rails. And you have the added benefit of time-based expiration. Note that the default is 5 minutes, as for usual usecase this seems to be a sensible default (at least to me). Just use `SOME_BIG_INTEGER(TM)` for no expiration.
 
 Usage
 =====

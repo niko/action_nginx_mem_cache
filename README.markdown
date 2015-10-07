@@ -10,7 +10,7 @@ The problem with this kind of caching is that Nginx and Rails somwhow have to co
 
 To accomplish the first I decided to use use a cookie - set by Rails - to tell Nginx what NOT to cache. In out case we do a timed expiration of pages for not logged in users, but you can define your own rules. So if s/o logs in, he gets the prevent_action_caching cookie set and Nginx never passes his requests memcache.
 
-And Nginx sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the contruction of the cache key is done just at one place: Nginx (besides the fact that Rails adds 'views/' in front of every given action cache key).
+And Nginx sets a custom header - Mem-Cache-Key - to tell Rails about the cache key. This way the construction of the cache key is done just at one place: Nginx (besides the fact that Rails adds 'views/' in front of every given action cache key).
 
 Functionally this caching is sort of a mixture between Rails page caching and Rails action caching. You still have the possibility to define a caching rule on a per-client (not per action) basis but keep away most of load from rails. And you have the added benefit of time-based expiration. Note that the default is 5 minutes, as for usual usecase this seems to be a sensible default (at least to me). Just use `SOME_BIG_INTEGER(TM)` for no expiration.
 
